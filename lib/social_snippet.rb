@@ -12,6 +12,7 @@ require_relative "social_snippet/snippet_finder"
 require "rugged"
 require "version_sorter"
 require "tsort"
+require "rest_client"
 
 # Extend Hash tsortable
 class Hash
