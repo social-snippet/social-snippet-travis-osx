@@ -2,6 +2,11 @@ language: ruby
 os:
   - linux
   - osx
+cache:
+  bundler: true
+  directories:
+    - node_modules
+    - bower_components
 rvm:
   - "2.1"
   - "2.0"
