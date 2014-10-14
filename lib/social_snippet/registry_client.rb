@@ -17,7 +17,15 @@ module SocialSnippet
     end
 
     def get_repositories(query = nil)
-      res_body = RestClient.get(url("repositories"))
+      params = {}
+      params[:q] = query unless query.nil?
+      res_body = RestClient.get(
+        url("repositories"),
+        {
+          :accept => :json,
+          :params => params,
+        },
+      )
       return JSON.parse res_body
     end
 
