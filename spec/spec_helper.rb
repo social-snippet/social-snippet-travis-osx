@@ -1,5 +1,6 @@
 require "social_snippet"
 require "json"
+require "cgi"
 
 require "fakefs/safe"
 
