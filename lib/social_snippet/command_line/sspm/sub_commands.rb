@@ -10,10 +10,9 @@ module SocialSnippet
       module SubCommands
 
         def self.all
-          commands = SubCommands.constants.select do |name|
+          SubCommands.constants.select do |name|
             /.+Command$/ === name
           end
-          commands
         end
 
       end

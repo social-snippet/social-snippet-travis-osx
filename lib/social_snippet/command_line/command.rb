@@ -32,13 +32,21 @@ module SocialSnippet
 
       def my_args
         last_ind = args.index do |arg|
-          false === arg.start_with?("-")
+          is_not_line_option?(arg)
         end
         if last_ind.nil?
           args
         else
           args[0 .. last_ind]
         end
+      end
+
+      def is_line_option?(s)
+        s.start_with?("-")
+      end
+
+      def is_not_line_option?(s)
+        is_line_option?(s) === false
       end
 
       def has_subcommand?
