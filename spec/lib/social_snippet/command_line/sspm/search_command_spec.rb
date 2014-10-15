@@ -88,7 +88,7 @@ module SocialSnippet::CommandLine::Sspm
 
       end # $ search repo
 
-      describe "$ search --name repo", :current => true do
+      describe "$ search --name repo" do
 
         let(:instance) { SubCommands::SearchCommand.new(["--name", "repo"]) }
 
