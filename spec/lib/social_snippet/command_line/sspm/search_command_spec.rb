@@ -88,9 +88,66 @@ module SocialSnippet::CommandLine::Sspm
 
       end # $ search repo
 
+      describe "$ search --name repo", :current => true do
 
-      describe "$ search --name repo" do
-      end
+        let(:instance) { SubCommands::SearchCommand.new(["--name", "repo"]) }
+
+        before do
+          WebMock
+          .stub_request(
+            :get,
+            "http://api.server/api/dummy/repositories?q=repo",
+          )
+          .to_return(
+            :status => 200,
+            :body => fake_repos.to_json,
+            :headers => {
+              "Content-Type" => "application/json",
+            },
+          )
+        end # GET /repositories?q=repo
+
+        context "run" do
+
+          context "name" do
+
+            it "my-repo" do
+              expect { instance.run }.to output(/my-repo/).to_stdout
+            end
+
+            it "new-repo" do
+              expect { instance.run }.to output(/my-repo/).to_stdout
+            end
+
+          end # name
+
+          context "desc" do
+
+            it "my-repo" do
+              expect { instance.run }.to_not output(/my repository/).to_stdout
+            end
+
+            it "new-repo" do
+              expect { instance.run }.to_not output(/new repository/).to_stdout
+            end
+
+          end # desc
+
+          context "url" do
+
+            it "my-repo" do
+              expect { instance.run }.to_not output(/#{"git://github.com/user/my-repo"}/).to_stdout
+            end
+
+            it "new-repo" do
+              expect { instance.run }.to_not output(/#{"git://github.com/user/new-repo"}/).to_stdout
+            end
+
+          end
+
+        end # run
+
+      end # $ search --name repo
 
     end # create instance
 
