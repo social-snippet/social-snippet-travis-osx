@@ -6,7 +6,11 @@ module SocialSnippet
 
       class MainCommand < Command
 
-        SUB_COMMANDS = SubCommands.all.freeze
+        attr_reader :sub_commands
+
+        def initialize
+          @sub_commands = SubCommands.all.freeze
+        end
 
         def define_options
         end
@@ -28,7 +32,7 @@ module SocialSnippet
         def call_subcommand(name)
           sub_command = to_command_class_sym(name)
 
-          if SUB_COMMANDS.include?(sub_command)
+          if sub_commands.include?(sub_command)
             Sspm::SubCommands.const_get(sub_command).new(args).run
           else
             Sspm::SubCommands.show_usage
