@@ -2,11 +2,5 @@
 
 require_relative "../lib/social_snippet"
 
-module SocialSnippet
-  if Cli::Sspm.has_subcommand?
-    Cli::Sspm.call_subcommand ARGV.shift
-  else
-    Cli::Sspm.show_usage
-  end
-end
+SocialSnippet::CommandLine::Sspm::MainCommand.new(ARGV).run
 

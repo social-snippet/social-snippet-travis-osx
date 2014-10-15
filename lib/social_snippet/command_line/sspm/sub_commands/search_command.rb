@@ -1,29 +1,24 @@
 module SocialSnippet
 
-  module Cli
+  module CommandLine
 
     module Sspm
 
-      module Subcommands
+      module SubCommands
 
-        module Search
+        class SearchCommand
 
-          @options = {}
-
-          def self.parse_options
+          def parse_options
             OptionParser.new do |opt|
-              opt.parse! ARGV
+              opt.parse! args
             end
           end
 
-          def self.set_default_options
+          def set_default_options
           end
 
-          def self.run
-            parse_options
-            set_default_options
-
-            query = ARGV.shift
+          def run
+            query = @args.shift
 
             # TODO: change host
             client = ::SocialSnippet::RegistryClient.new("sspm-test.herokuapp.com", "v0", "https")
