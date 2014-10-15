@@ -8,7 +8,8 @@ module SocialSnippet
 
         attr_reader :sub_commands
 
-        def initialize
+        def initialize(new_args)
+          super
           @sub_commands = SubCommands.all.freeze
         end
 
