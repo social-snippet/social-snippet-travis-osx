@@ -14,7 +14,6 @@ module SocialSnippet
           def initialize(new_args)
             super
 
-            @flag_has_options = false
             @query = args.find {|arg| is_not_line_option? arg }
 
             @client = ::SocialSnippet::RegistryClient.new(
@@ -28,24 +27,27 @@ module SocialSnippet
             # show name
             opt_parser.on "-n", "--[no-]name" do |v|
               options[:show_name] = v
-              @flag_has_options = true
             end
 
             # show desc
             opt_parser.on "-d", "--[no-]desc" do |v|
               options[:show_desc] = v
-              @flag_has_options = true
             end
 
             # show url
             opt_parser.on "-u", "--[no-]url" do |v|
               options[:show_url] = v
-              @flag_has_options = true
             end
           end
 
           def set_default_options
-            unless @flag_has_options
+            flag_output = false
+            flag_output ||= options[:show_name]
+            flag_output ||= options[:show_desc]
+            flag_output ||= options[:show_url]
+
+            # use default output if no output
+            unless flag_output
               options[:show_name] = true if options[:show_name].nil?
               options[:show_desc] = true if options[:show_desc].nil?
               options[:show_url]  = false if options[:show_url].nil?
