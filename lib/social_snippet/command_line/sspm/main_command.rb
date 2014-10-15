@@ -26,8 +26,7 @@ module SocialSnippet
         private
 
         def call_subcommand(name)
-          # hello -> HelloCommand
-          sub_command = "#{name.capitalize}Command".to_sym
+          sub_command = to_command_class_sym(name)
 
           if SUB_COMMANDS.include?(sub_command)
             Sspm::SubCommands.const_get(sub_command).new(args).run

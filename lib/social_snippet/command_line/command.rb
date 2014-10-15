@@ -41,6 +41,11 @@ module SocialSnippet
         end
       end
 
+      # hello -> HelloCommand
+      def to_command_class_sym(s)
+        "#{s.capitalize}Command".to_sym
+      end
+
       def is_line_option?(s)
         s.start_with?("-")
       end
