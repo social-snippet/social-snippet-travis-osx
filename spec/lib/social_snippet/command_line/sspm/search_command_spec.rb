@@ -30,6 +30,7 @@ module SocialSnippet::CommandLine::Sspm
       describe "$ search repo" do
 
         let(:instance) { SubCommands::SearchCommand.new(["repo"]) }
+        before { instance.init }
 
         before do
           WebMock
@@ -91,6 +92,7 @@ module SocialSnippet::CommandLine::Sspm
       describe "$ search --name --no-desc repo" do
 
         let(:instance) { SubCommands::SearchCommand.new(["--name", "--no-desc", "repo"]) }
+        before { instance.init }
 
         before do
           WebMock

@@ -10,6 +10,8 @@ module SocialSnippet::CommandLine::Sspm
 
         let(:instance) { MainCommand.new(["search", "repo"]) }
 
+        before { instance.init }
+
         it "call $ search repo" do
           allow_any_instance_of(::SocialSnippet::CommandLine::Command).to receive(:init).and_return nil
           expect(SubCommands::SearchCommand).to receive(:new).with(["repo"]).once do

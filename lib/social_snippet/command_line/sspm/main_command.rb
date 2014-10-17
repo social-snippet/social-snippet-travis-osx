@@ -34,7 +34,9 @@ module SocialSnippet
           sub_command = to_command_class_sym(name)
 
           if sub_commands.include?(sub_command)
-            Sspm::SubCommands.const_get(sub_command).new(args).run
+            cli = Sspm::SubCommands.const_get(sub_command).new(args)
+            cli.init
+            cli.run
           else
             Sspm::SubCommands.show_usage
           end
