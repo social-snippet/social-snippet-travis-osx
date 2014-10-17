@@ -30,7 +30,7 @@ module SocialSnippet
 
       private
 
-      def my_args
+      def line_options
         last_ind = args.index do |arg|
           is_not_line_option?(arg)
         end
@@ -62,7 +62,7 @@ module SocialSnippet
 
       def init
         define_options
-        opt_parser.parse! my_args
+        opt_parser.parse! line_options
         set_default_options
       end
 
