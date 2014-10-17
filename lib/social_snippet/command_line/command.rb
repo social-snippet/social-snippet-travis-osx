@@ -20,8 +20,8 @@ module SocialSnippet
 
       def initialize(new_args)
         @args = new_args.clone
-        @tokens = extract_tokens
         @options = {}
+        @tokens = [] # init after parse options
         @opt_parser = OptionParser.new
       end
 
@@ -36,6 +36,7 @@ module SocialSnippet
       def init
         define_options
         opt_parser.parse! line_options
+        @tokens = extract_tokens
         set_default_options
       end
 
