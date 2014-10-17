@@ -1,3 +1,12 @@
+#
+# Usage:
+#
+# class SomeCommand < Command; end
+# cli = SomeCommand.new [arg1, arg2, ...]
+# cli.init
+# cli.run
+#
+
 module SocialSnippet
 
   module CommandLine
@@ -5,15 +14,15 @@ module SocialSnippet
     class Command
 
       attr_reader :args
+      attr_reader :tokens
       attr_reader :options
       attr_reader :opt_parser
 
       def initialize(new_args)
         @args = new_args.clone
+        @tokens = extract_tokens
         @options = {}
         @opt_parser = OptionParser.new
-
-        init
       end
 
       def define_options
@@ -22,6 +31,12 @@ module SocialSnippet
 
       def set_default_options
         raise "not implement"
+      end
+
+      def init
+        define_options
+        opt_parser.parse! line_options
+        set_default_options
       end
 
       def run
@@ -60,10 +75,17 @@ module SocialSnippet
         return true
       end
 
-      def init
-        define_options
-        opt_parser.parse! line_options
-        set_default_options
+      def extract_tokens
+        args.select {|arg| is_not_line_option?(arg) }
+      end
+
+      # [--opt1, --opt2, token1, token2] => token1
+      def next_token
+        @tokens.shift
+      end
+
+      def say(s)
+        puts s
       end
 
     end
