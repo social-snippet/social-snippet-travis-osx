@@ -26,11 +26,27 @@ module SocialSnippet
           :params => params,
         },
       )
-      return JSON.parse res_body
+      return JSON.parse(res_body)
     end
 
     def get_repository(repo_name)
-      raise "not implement"
+      res_body = RestClient.get(
+        url("repositories/#{repo_name}"),
+        {
+          :accept => :json,
+        },
+      )
+      return JSON.parse(res_body)
+    end
+
+    def get_dependencies(repo_name)
+      res_body = RestClient.get(
+        url("repositories/#{repo_name}/dependencies"),
+        {
+          :accept => :json,
+        },
+      )
+      return JSON.parse(res_body)
     end
 
   end
