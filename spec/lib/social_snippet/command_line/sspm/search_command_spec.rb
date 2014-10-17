@@ -88,9 +88,9 @@ module SocialSnippet::CommandLine::Sspm
 
       end # $ search repo
 
-      describe "$ search --name repo" do
+      describe "$ search --name --no-desc repo" do
 
-        let(:instance) { SubCommands::SearchCommand.new(["--name", "repo"]) }
+        let(:instance) { SubCommands::SearchCommand.new(["--name", "--no-desc", "repo"]) }
 
         before do
           WebMock
@@ -121,7 +121,7 @@ module SocialSnippet::CommandLine::Sspm
 
           end # name
 
-          context "desc" do
+          context "no desc" do
 
             it "my-repo" do
               expect { instance.run }.to_not output(/my repository/).to_stdout
@@ -133,7 +133,7 @@ module SocialSnippet::CommandLine::Sspm
 
           end # desc
 
-          context "url" do
+          context "no url" do
 
             it "my-repo" do
               expect { instance.run }.to_not output(/#{"git://github.com/user/my-repo"}/).to_stdout

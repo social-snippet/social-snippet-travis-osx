@@ -41,20 +41,8 @@ module SocialSnippet
           end
 
           def set_default_options
-            flag_output = false
-            flag_output ||= options[:show_name]
-            flag_output ||= options[:show_desc]
-            flag_output ||= options[:show_url]
-
-            # use default output if no output
-            unless flag_output
-              options[:show_name] = true if options[:show_name].nil?
-              options[:show_desc] = true if options[:show_desc].nil?
-              options[:show_url]  = false if options[:show_url].nil?
-            end
-
-            options[:show_name] = false if options[:show_name].nil?
-            options[:show_desc] = false if options[:show_desc].nil?
+            options[:show_name] = true if options[:show_name].nil?
+            options[:show_desc] = true if options[:show_desc].nil?
             options[:show_url]  = false if options[:show_url].nil?
           end
 
