@@ -1,5 +1,6 @@
 require_relative "sub_commands/hello_command"
 require_relative "sub_commands/search_command"
+require_relative "sub_commands/install_command"
 
 module SocialSnippet
 
