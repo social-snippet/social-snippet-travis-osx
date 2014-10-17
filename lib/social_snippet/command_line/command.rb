@@ -62,7 +62,9 @@ module SocialSnippet
       end
 
       def is_line_option?(s)
-        s.start_with?("-")
+        return true if /^-[a-zA-Z0-9]$/ === s
+        return true if /^--/ === s
+        return false
       end
 
       def is_not_line_option?(s)
