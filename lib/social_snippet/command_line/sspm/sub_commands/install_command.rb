@@ -24,15 +24,22 @@ module SocialSnippet
           end
 
           def define_options
+            # Does not install
+            opt_parser.on "-d", "--dry-run" do
+              options[:dry_run] = true
+            end
           end
 
           def set_default_options
+            options[:dry_run] if options[:dry_run].nil?
           end
 
           def run
             repo_name = next_token
             client.get_dependencies(repo_name).each do |repo_info|
               say "Install: #{repo_info["name"]}"
+
+              next if options[:dry_run]
 
               say "Download: #{repo_info["url"]}"
               repo = Repository.clone repo_info["url"]
