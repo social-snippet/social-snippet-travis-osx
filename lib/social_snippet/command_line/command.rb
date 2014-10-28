@@ -51,6 +51,7 @@ module SocialSnippet
       private
 
       def parse_line_options
+        return if args.empty?
         last_ind = last_line_option_index
         if last_ind.nil?
           parsed = args.clone
