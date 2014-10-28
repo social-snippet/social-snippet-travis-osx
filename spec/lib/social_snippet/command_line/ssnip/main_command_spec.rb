@@ -5,6 +5,12 @@ module SocialSnippet::CommandLine
   describe SSnip::MainCommand, :current => true, :use_raw_filesystem => true do
 
     before do
+      allow_any_instance_of(::SocialSnippet::Registry::RegistryResources::Base).to receive(:rest_client) do
+        RestClient::Resource.new "http://api.server/api/dummy"
+      end
+    end
+
+    before do
       stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_HOST", "api.server"
       stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_VERSION", "dummy"
       stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_PROTOCOL", "http"
