@@ -3,8 +3,6 @@ require_relative "social_snippet/tag"
 require_relative "social_snippet/tag_parser"
 require_relative "social_snippet/config"
 require_relative "social_snippet/repository"
-require_relative "social_snippet/repository_manager"
-require_relative "social_snippet/repository_factory"
 require_relative "social_snippet/context"
 require_relative "social_snippet/snippet"
 require_relative "social_snippet/inserter"
@@ -49,7 +47,7 @@ module SocialSnippet
 
     # Initialize for repository
     def init_repo_manager
-      @repo_manager = RepositoryManager.new(config, logger)
+      @repo_manager = ::SocialSnippet::Repository::RepositoryManager.new(config, logger)
     end
 
     def init_registry_client
@@ -66,7 +64,7 @@ module SocialSnippet
 
     # Install repository
     #
-    # @param repo [SocialSnippet::BaseRepository]
+    # @param repo [::SocialSnippet::Repository::Drivers::BaseRepository]
     def install_repository(repo)
       repo_manager.install_repository repo
     end

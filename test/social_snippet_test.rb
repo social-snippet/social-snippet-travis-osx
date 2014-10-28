@@ -6,8 +6,8 @@ describe SocialSnippet::SocialSnippet do
   before { FakeFS.activate! }
   after { FakeFS.deactivate!; FakeFS::FileSystem.clear }
 
-  let(:instance) { SocialSnippet::SocialSnippet.new }
-  let(:repo_manager) { SocialSnippet::RepositoryManager.new(::SocialSnippet::Config.new, ::SocialSnippet::Logger.new(STDOUT)) }
+  let(:instance) { ::SocialSnippet::SocialSnippet.new }
+  let(:repo_manager) { ::SocialSnippet::Repository::RepositoryManager.new(::SocialSnippet::Config.new, ::SocialSnippet::Logger.new(STDOUT)) }
   let(:repo_path) { "#{ENV["HOME"]}/.social-snippet/repo" }
   let(:tmp_repo_path) { "/tmp/repos" }
   let(:tmp_repo_path_no_ver) { "/tmp/repos_no_ver" }
@@ -36,7 +36,7 @@ describe SocialSnippet::SocialSnippet do
         repo_path = "#{tmp_repo_path_no_ver}/#{repo_name}"
       else
         base_repo_path = "#{tmp_repo_path}/#{repo_name}/#{repo_refs[repo_name].first}"
-        base_repo = SocialSnippet::Repository::BaseRepository.new(base_repo_path)
+        base_repo = SocialSnippet::Repository::Drivers::BaseRepository.new(base_repo_path)
         allow(base_repo).to receive(:get_refs).and_return repo_refs[repo_name]
         base_repo.load_snippet_json
         repo_version = base_repo.get_latest_version ref
@@ -49,7 +49,7 @@ describe SocialSnippet::SocialSnippet do
           repo_path = "#{tmp_repo_path}/#{repo_name}/#{repo_version}"
         end
       end
-      repo = SocialSnippet::Repository::BaseRepository.new(repo_path)
+      repo = SocialSnippet::Repository::Drivers::BaseRepository.new(repo_path)
       allow(repo).to receive(:get_refs).and_return repo_refs[repo_name]
       allow(repo).to receive(:get_commit_id).and_return "#{repo_version}#{commit_id}"
       repo.load_snippet_json
@@ -1262,7 +1262,7 @@ describe SocialSnippet::SocialSnippet do
         ].join("\n")
 
         allow(repo_manager).to receive(:find_repository).with(repo_name, ref_name) do
-          repo = SocialSnippet::Repository::BaseRepository.new("#{repo_path}/#{repo_name}/#{ref_name}")
+          repo = SocialSnippet::Repository::Drivers::BaseRepository.new("#{repo_path}/#{repo_name}/#{ref_name}")
           allow(repo).to receive(:get_refs).and_return([
             '0.0.1',
             '0.0.2',
@@ -1308,7 +1308,7 @@ describe SocialSnippet::SocialSnippet do
         ].join("\n")
 
         allow(repo_manager).to receive(:find_repository).with(repo_name, ref_name) do
-          repo = SocialSnippet::Repository::BaseRepository.new("#{repo_path}/#{repo_name}/#{ref_name}")
+          repo = SocialSnippet::Repository::Drivers::BaseRepository.new("#{repo_path}/#{repo_name}/#{ref_name}")
           allow(repo).to receive(:get_refs).and_return([
             '0.0.1',
             '0.0.2',
@@ -1453,7 +1453,7 @@ describe SocialSnippet::SocialSnippet do
         ].join("\n")
 
         repo_config = Proc.new do |path|
-          repo = SocialSnippet::Repository::BaseRepository.new("#{repo_path}/#{repo_name}")
+          repo = SocialSnippet::Repository::Drivers::BaseRepository.new("#{repo_path}/#{repo_name}")
           allow(repo).to receive(:get_commit_id).and_return commit_id
           allow(repo).to receive(:get_refs).and_return []
           repo.load_snippet_json
@@ -1530,7 +1530,7 @@ describe SocialSnippet::SocialSnippet do
         ].join("\n")
 
         repo_config = Proc.new do |path|
-          repo = SocialSnippet::Repository::BaseRepository.new("#{repo_path}/#{repo_name}")
+          repo = SocialSnippet::Repository::Drivers::BaseRepository.new("#{repo_path}/#{repo_name}")
           allow(repo).to receive(:get_commit_id).and_return commit_id
           allow(repo).to receive(:get_refs).and_return []
           repo.load_snippet_json
@@ -1590,7 +1590,7 @@ describe SocialSnippet::SocialSnippet do
         ].join("\n")
 
         repo_config = Proc.new do |path|
-          repo = SocialSnippet::Repository::BaseRepository.new("#{repo_path}/#{repo_name}")
+          repo = SocialSnippet::Repository::Drivers::BaseRepository.new("#{repo_path}/#{repo_name}")
           allow(repo).to receive(:get_commit_id).and_return commit_id
           allow(repo).to receive(:get_refs).and_return []
           repo.load_snippet_json
@@ -1653,7 +1653,7 @@ describe SocialSnippet::SocialSnippet do
         ].join("\n")
 
         repo_config = Proc.new do |path|
-          repo = SocialSnippet::Repository::BaseRepository.new("#{repo_path}/#{repo_name}")
+          repo = SocialSnippet::Repository::Drivers::BaseRepository.new("#{repo_path}/#{repo_name}")
           allow(repo).to receive(:get_commit_id).and_return commit_id
           allow(repo).to receive(:get_refs).and_return []
           repo.load_snippet_json

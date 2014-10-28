@@ -1,5 +1,6 @@
-require_relative "repository/base_repository"
-require_relative "repository/git_repository"
+require_relative "repository/drivers"
+require_relative "repository/repository_factory"
+require_relative "repository/repository_manager"
 require_relative "repository/repository_errors"
 
 module SocialSnippet

@@ -9,7 +9,7 @@ module SocialSnippet
     after { FakeFS.deactivate! }
 
     let(:instance) { SocialSnippet.new }
-    let(:repo_manager) { RepositoryManager.new(Config.new, Logger.new(STDOUT)) }
+    let(:repo_manager) { ::SocialSnippet::Repository::RepositoryManager.new(Config.new, Logger.new(STDOUT)) }
     let(:commit_id) { "dummycommitid" }
     let(:short_commit_id) { commit_id[0..7] }
     let(:repo_path) { "#{ENV["HOME"]}/.social-snippet/repo" }
@@ -48,7 +48,7 @@ module SocialSnippet
           ].join("\n")
 
           repo_config = Proc.new do |path|
-            repo = Repository::BaseRepository.new("#{repo_path}/my-repo")
+            repo = ::SocialSnippet::Repository::Drivers::BaseRepository.new("#{repo_path}/my-repo")
             allow(repo).to receive(:get_commit_id).and_return commit_id
             allow(repo).to receive(:get_refs).and_return []
             repo.load_snippet_json

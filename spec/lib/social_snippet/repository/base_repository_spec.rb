@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module SocialSnippet::Repository
+module SocialSnippet::Repository::Drivers
 
   describe BaseRepository do
 
@@ -40,4 +40,4 @@ module SocialSnippet::Repository
 
   end # BaseRepository
 
-end # SocialSnippet::Repository
+end # SocialSnippet::Repository::Drivers

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module SocialSnippet
+module SocialSnippet::Repository
 
   describe RepositoryFactory do
 
@@ -28,4 +28,4 @@ module SocialSnippet
 
   end # RepositoryFactory
 
-end # SocialSnippet
+end # SocialSnippet::Repository

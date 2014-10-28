@@ -51,7 +51,7 @@ module SocialSnippet::CommandLine::Sspm
             repo
           end
 
-          expect_any_instance_of(::SocialSnippet::RepositoryManager).to receive(:install_repository).once do
+          expect_any_instance_of(::SocialSnippet::Repository::RepositoryManager).to receive(:install_repository).once do
             true
           end
         end
@@ -139,7 +139,7 @@ module SocialSnippet::CommandLine::Sspm
             ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
           end
 
-          expect_any_instance_of(::SocialSnippet::RepositoryManager).to receive(:install_repository).twice do
+          expect_any_instance_of(::SocialSnippet::Repository::RepositoryManager).to receive(:install_repository).twice do
             true
           end
         end
@@ -215,7 +215,7 @@ module SocialSnippet::CommandLine::Sspm
             end
           end
 
-          expect_any_instance_of(::SocialSnippet::RepositoryManager).not_to receive(:install_repository) do
+          expect_any_instance_of(::SocialSnippet::Repository::RepositoryManager).not_to receive(:install_repository) do
             true
           end
         end
