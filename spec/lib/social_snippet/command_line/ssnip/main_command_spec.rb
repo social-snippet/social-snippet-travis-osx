@@ -11,12 +11,6 @@ module SocialSnippet::CommandLine
     end
 
     before do
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_HOST", "api.server"
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_VERSION", "dummy"
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_PROTOCOL", "http"
-    end # define constants
-
-    before do
       FileUtils.mkdir_p "/tmp/social-snippet"
       tmp_path = Dir.mktmpdir(nil, "/tmp/social-snippet")
       ENV["SOCIAL_SNIPPET_HOME"] = tmp_path
