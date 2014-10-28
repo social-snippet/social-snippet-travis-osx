@@ -87,17 +87,6 @@ module SocialSnippet
         return true
       end
 
-      def call_subcommand(command_name)
-        sub_command = to_command_class_sym(command_name)
-        if sub_commands.include?(sub_command)
-          cli = Sspm::SubCommands.const_get(sub_command).new(args)
-          cli.init
-          cli.run
-        else
-          Sspm::SubCommands.show_usage
-        end
-      end
-
       # [--opt1, --opt2, token1, token2] => token1
       def next_token
         @tokens.shift

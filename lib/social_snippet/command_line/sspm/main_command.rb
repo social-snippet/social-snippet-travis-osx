@@ -22,9 +22,22 @@ module SocialSnippet
         def run
           if has_subcommand?
             command_name = args.shift
-            call_subcommand command_name
+            call_sspm_subcommand command_name
           else
             Sspm.show_usage
+          end
+        end
+
+        private
+
+        def call_sspm_subcommand(command_name)
+          sub_command = to_command_class_sym(command_name)
+          if sub_commands.include?(sub_command)
+            cli = Sspm::SubCommands.const_get(sub_command).new(args)
+            cli.init
+            cli.run
+          else
+            Sspm::SubCommands.show_usage
           end
         end
 
