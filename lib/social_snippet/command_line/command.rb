@@ -39,7 +39,7 @@ module SocialSnippet
 
       def init
         define_options
-        opt_parser.parse! args
+        parse_line_options
         @tokens = args
         set_default_options
       end
@@ -50,14 +50,19 @@ module SocialSnippet
 
       private
 
-      def line_options
-        last_ind = args.index do |arg|
-          is_not_line_option?(arg)
-        end
+      def parse_line_options
+        last_ind = last_line_option_index
         if last_ind.nil?
-          args
+          parsed = args.clone
         else
-          args[0 .. last_ind]
+          parsed = args[0 .. last_ind]
+        end
+        @args = opt_parser.parse(parsed).concat(args[last_ind + 1..-1])
+      end
+
+      def last_line_option_index
+        args.index do |arg|
+          is_not_line_option?(arg)
         end
       end
 
@@ -80,6 +85,17 @@ module SocialSnippet
         return false if args.empty?
         return false if args[0].start_with?("-")
         return true
+      end
+
+      def call_subcommand(command_name)
+        sub_command = to_command_class_sym(command_name)
+        if sub_commands.include?(sub_command)
+          cli = Sspm::SubCommands.const_get(sub_command).new(args)
+          cli.init
+          cli.run
+        else
+          Sspm::SubCommands.show_usage
+        end
       end
 
       # [--opt1, --opt2, token1, token2] => token1
