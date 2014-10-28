@@ -16,15 +16,13 @@ module SocialSnippet::CommandLine
       ENV["SOCIAL_SNIPPET_HOME"] = tmp_path
     end # prepare tmp dir
 
-    let(:result) do
-      [
-        {
-          "name" => "example-repo",
-          "desc" => "This is my repository.",
-          "url" => "https://github.com/social-snippet/example-repo",
-        },
-      ]
-    end # result
+    let(:example_repo_info) do
+      {
+        "name" => "example-repo",
+        "desc" => "This is my repository.",
+        "url" => "https://github.com/social-snippet/example-repo",
+      },
+    end # example_repo_info
 
     before do
       WebMock
@@ -34,7 +32,7 @@ module SocialSnippet::CommandLine
       )
       .to_return(
         :status => 200,
-        :body => result.to_json,
+        :body => example_repo_info.to_json,
         :headers => {
           "Content-Type" => "application/json",
         },
