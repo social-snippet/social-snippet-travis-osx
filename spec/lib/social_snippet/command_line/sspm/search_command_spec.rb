@@ -20,12 +20,8 @@ module SocialSnippet::CommandLine::Sspm
     end
 
     before do
-      allow_any_instance_of(::SocialSnippet::RegistryClient).to receive(:config) do
-        config = ::SocialSnippet::Config.new(
-          :sspm_host      => "api.server",
-          :sspm_version   => "dummy",
-          :sspm_protocol  => "http",
-        )
+      allow_any_instance_of(::SocialSnippet::Registry::RegistryResources::Base).to receive(:rest_client) do
+        RestClient::Resource.new "http://api.server/api/dummy"
       end
     end
 

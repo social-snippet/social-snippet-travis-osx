@@ -2,7 +2,7 @@ require "spec_helper"
 
 module SocialSnippet
 
-  describe RegistryClient do
+  describe Registry::RegistryClient do
 
     # enable WebMock
     before { WebMock.disable_net_connect! }
@@ -73,11 +73,11 @@ module SocialSnippet
 
     context "create instance" do
 
-      let(:instance) { RegistryClient.new(config) }
+      let(:instance) { Registry::RegistryClient.new(config) }
 
       context "repositories" do
 
-        let(:result) { instance.repositories }
+        let(:result) { instance.repositories.all }
 
         context "check result" do
           let(:result_names) { result.map {|repo| repo["name"] } }
@@ -92,7 +92,7 @@ module SocialSnippet
 
         context "query = repo" do
 
-          let(:result) { instance.repositories("repo") }
+          let(:result) { instance.repositories.search("repo") }
 
           context "check" do
             let(:result_names) { result.map {|repo| repo["name"] } }
@@ -105,7 +105,7 @@ module SocialSnippet
 
         context "query = new" do
 
-          let(:result) { instance.repositories("new") }
+          let(:result) { instance.repositories.search("new") }
 
           context "check" do
             let(:result_names) { result.map {|repo| repo["name"] } }

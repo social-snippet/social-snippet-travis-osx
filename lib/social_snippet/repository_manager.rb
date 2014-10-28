@@ -23,7 +23,7 @@ module SocialSnippet
       FileUtils.mkdir_p @repo_cache_path
 
       @logger = logger
-      @client = RegistryClient.new(config)
+      @client = ::SocialSnippet::Registry::RegistryClient.new(config)
     end
 
     # Create suitable Repository class instance

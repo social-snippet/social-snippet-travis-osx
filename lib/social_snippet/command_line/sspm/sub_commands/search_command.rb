@@ -40,7 +40,7 @@ module SocialSnippet
 
           def run
             query = next_token
-            social_snippet.client.repositories(query).each do |repo|
+            social_snippet.client.repositories.search(query).each do |repo|
               puts output_format % output_list(repo)
             end
           end

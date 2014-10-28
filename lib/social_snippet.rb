@@ -9,7 +9,7 @@ require_relative "social_snippet/context"
 require_relative "social_snippet/snippet"
 require_relative "social_snippet/inserter"
 require_relative "social_snippet/snippet_finder"
-require_relative "social_snippet/registry_client"
+require_relative "social_snippet/registry"
 require_relative "social_snippet/command_line"
 require_relative "social_snippet/logger"
 
@@ -53,7 +53,7 @@ module SocialSnippet
     end
 
     def init_registry_client
-      @client = RegistryClient.new(config)
+      @client = ::SocialSnippet::Registry::RegistryClient.new(config)
     end
 
     # Insert snippets to given text
