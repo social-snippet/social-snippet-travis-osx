@@ -30,7 +30,7 @@ module SocialSnippet::CommandLine
       WebMock
       .stub_request(
         :get,
-        "http://api.server/api/dummy/repositories/example-repo/dependencies",
+        "http://api.server/api/dummy/repositories/example-repo",
       )
       .to_return(
         :status => 200,
@@ -39,7 +39,7 @@ module SocialSnippet::CommandLine
           "Content-Type" => "application/json",
         },
       )
-    end # GET /repositories/my-repo/dependencies
+    end # GET /repositories/my-repo
 
     context "$ sspm install example-repo" do
 
