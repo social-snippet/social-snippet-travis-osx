@@ -1,4 +1,7 @@
 module SocialSnippet
+
+  require "pathname"
+
   class Tag
     attr_reader :path
     attr_reader :repo

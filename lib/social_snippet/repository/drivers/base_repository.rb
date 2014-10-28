@@ -4,6 +4,8 @@ module SocialSnippet
 
     module Drivers
 
+      require "json"
+
       # Repository base class
       # usage: class GitRepository < BaseRepository
       class BaseRepository
