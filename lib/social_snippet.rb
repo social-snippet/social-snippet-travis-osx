@@ -32,8 +32,9 @@ module SocialSnippet
 
     # Constructor
     def initialize
-      @config = Config.new.freeze
-      @logger = Logger.new STDOUT
+      @config = ::SocialSnippet::Config.new.freeze
+      @logger = ::SocialSnippet::Logger.new STDOUT
+      logger.level = ::SocialSnippet::Logger::Severity::INFO
       init_repo_manager
       init_registry_client
     end
