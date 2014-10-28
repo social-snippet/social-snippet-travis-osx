@@ -11,6 +11,8 @@ module SocialSnippet
 
   module CommandLine
 
+    require "optparse"
+
     class Command
 
       attr_reader :args

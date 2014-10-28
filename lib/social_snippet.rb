@@ -11,14 +11,7 @@ require_relative "social_snippet/registry"
 require_relative "social_snippet/command_line"
 require_relative "social_snippet/logger"
 
-require "rugged"
-require "version_sorter"
 require "tsort"
-require "rest_client"
-require "optparse"
-require "json"
-require "pathname"
-require "logger"
 
 # Extend Hash tsortable
 class Hash
@@ -65,8 +58,8 @@ module SocialSnippet
     # Install repository
     #
     # @param repo [::SocialSnippet::Repository::Drivers::BaseRepository]
-    def install_repository(repo)
-      repo_manager.install_repository repo
+    def install_repository(repo_name, options = {})
+      repo_manager.install_repository repo_name, options
     end
 
   end

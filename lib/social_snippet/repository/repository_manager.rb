@@ -94,17 +94,39 @@ module SocialSnippet
         return nil
       end
 
-      def install_repository(repo_name)
-        logger.say "Install: #{repo_name}"
-
-          return # TODO: remove
-        dest_dir = "#{install_path}/#{repo.name}"
-          if Dir.exists?(dest_dir)
-            # TODO: update repo
-            raise "exists dir"
-        else
-          FileUtils.cp_r repo.path, dest_dir
+      def install_repository(repo_name, options = {})
+        if is_installed?(repo_name)
+          logger.say "#{repo_name} is already installed"
+          return
         end
+
+        logger.say "Install: #{repo_name}"
+        info = client.repositories.find(repo_name)
+        logger.debug info
+
+        logger.say "Clone: #{info["url"]}"
+        unless options[:dry_run]
+          repo = RepositoryFactory.clone(info["url"])
+          logger.debug info
+        end
+
+        logger.say "Copy: #{repo_name} into #{install_path}/#{repo_name}"
+        unless options[:dry_run]
+          FileUtils.cp_r repo.path, "#{install_path}/#{repo_name}"
+        end
+
+        # install dependencies
+        if info["dependencies"]
+          info["dependencies"].each do |dep_repo_name, dep_repo_version|
+            install_repository dep_repo_name
+          end
+        end
+
+        logger.say "Success: #{repo_name}"
+      end
+
+      def is_installed?(repo_name)
+        Dir.exists? "#{install_path}/#{repo_name}"
       end
 
       private

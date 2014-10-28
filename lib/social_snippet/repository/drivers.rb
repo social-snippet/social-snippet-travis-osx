@@ -7,6 +7,8 @@ module SocialSnippet
 
     module Drivers
 
+      require "version_sorter"
+
     end
 
   end

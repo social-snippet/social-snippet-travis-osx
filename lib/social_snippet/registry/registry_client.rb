@@ -2,6 +2,8 @@ module SocialSnippet
 
   module Registry
 
+    require "rest_client"
+
     class RegistryClient
 
       attr_reader :repositories

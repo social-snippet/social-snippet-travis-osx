@@ -2,13 +2,89 @@ require "spec_helper"
 
 module SocialSnippet::CommandLine::Sspm
 
-  describe SubCommands::InstallCommand, :install_current => true do
+  describe SubCommands::InstallCommand do
 
     before do
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_HOST", "api.server"
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_VERSION", "dummy"
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_PROTOCOL", "http"
-    end # define constants
+      allow_any_instance_of(::SocialSnippet::SocialSnippet).to receive(:logger) do
+        logger = ::SocialSnippet::Logger.new STDOUT
+        logger.level = ::SocialSnippet::Logger::Severity::INFO
+        logger
+      end
+    end # set logger.level
+
+    before do
+      allow_any_instance_of(::SocialSnippet::Registry::RegistryResources::Base).to receive(:rest_client) do
+        RestClient::Resource.new "http://api.server/api/dummy"
+      end
+    end # use dummy api server
+
+    let(:my_repo_info) do
+      {
+        "name" => "my-repo",
+        "desc" => "This is new repository.",
+        "url" => "git://github.com/user/my-repo",
+        "dependencies" => {
+        },
+      }
+    end # result
+
+    before do
+      WebMock
+        .stub_request(
+          :get,
+          "http://api.server/api/dummy/repositories/my-repo",
+        )
+        .to_return(
+          :status => 200,
+          :body => my_repo_info.to_json,
+          :headers => {
+            "Content-Type" => "application/json",
+          },
+        )
+    end # GET /repositories/my-repo/dependencies
+
+    let(:new_repo_info) do
+      {
+        "name" => "new-repo",
+        "desc" => "This is new repository.",
+        "url" => "git://github.com/user/new-repo",
+        "dependencies" => {
+          "my-repo" => "1.0.0",
+        },
+      }
+    end # result
+
+    before do
+      WebMock
+        .stub_request(
+          :get,
+          "http://api.server/api/dummy/repositories/new-repo",
+        )
+        .to_return(
+          :status => 200,
+          :body => new_repo_info.to_json,
+          :headers => {
+            "Content-Type" => "application/json",
+          },
+        )
+    end # GET /repositories/new-repo/dependencies
+
+    before do
+      expect(::SocialSnippet::Repository::RepositoryFactory).to receive(:clone) do
+        class FakeRepo
+          attr_reader :path
+        end
+
+        repo = FakeRepo.new
+        allow(repo).to receive(:path).and_return "/path/to/repo"
+        repo
+      end
+    end
+
+    before do
+      allow(::FileUtils).to receive(:cp_r) do
+      end
+    end
 
     context "create instance" do
 
@@ -17,42 +93,13 @@ module SocialSnippet::CommandLine::Sspm
         let(:instance) { SubCommands::InstallCommand.new ["my-repo"] }
         before { instance.init }
 
-        let(:result) do
-          {
-            "name" => "my-repo",
-            "desc" => "This is my repository.",
-            "url" => "git://github.com/user/my-repo",
-            "dependencies" => {
-            },
-          }
-        end # result
-
         before do
-          WebMock
-          .stub_request(
-            :get,
-            "http://api.server/api/dummy/repositories/my-repo",
-          )
-          .to_return(
-            :status => 200,
-            :body => result.to_json,
-            :headers => {
-              "Content-Type" => "application/json",
-            },
-          )
-        end # GET /repositories/my-repo/dependencies
-
-        before do
-          expect(::SocialSnippet::Repository).to receive(:clone).once do
-            repo = ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
+          allow(::SocialSnippet::Repository::RepositoryFactory).to receive(:clone) do
+            repo = ::SocialSnippet::Repository::Drivers::BaseRepository.new("/path/to/repo")
             expect(repo).to receive(:dependencies) do
               {}
             end
             repo
-          end
-
-          expect_any_instance_of(::SocialSnippet::Repository::RepositoryManager).to receive(:install_repository).once do
-            true
           end
         end
 
@@ -66,8 +113,8 @@ module SocialSnippet::CommandLine::Sspm
             expect { instance.run }.to output(/Install/).to_stdout
           end
 
-          it "download" do
-            expect { instance.run }.to output(/Download/).to_stdout
+          it "clone" do
+            expect { instance.run }.to output(/Clone/).to_stdout
           end
 
           it "success" do
@@ -83,64 +130,9 @@ module SocialSnippet::CommandLine::Sspm
         let(:instance) { SubCommands::InstallCommand.new ["new-repo"] }
         before { instance.init }
 
-        let(:new_repo_info) do
-          {
-            "name" => "new-repo",
-            "desc" => "This is new repository.",
-            "url" => "git://github.com/user/new-repo",
-            "dependencies" => {
-              "my-repo" => "1.0.0",
-            },
-          }
-        end # result
-
         before do
-          WebMock
-          .stub_request(
-            :get,
-            "http://api.server/api/dummy/repositories/new-repo",
-          )
-          .to_return(
-            :status => 200,
-            :body => new_repo_info.to_json,
-            :headers => {
-              "Content-Type" => "application/json",
-            },
-          )
-        end # GET /repositories/new-repo
-
-        let(:my_repo_info) do
-          {
-            "name" => "my-repo",
-            "desc" => "This is new repository.",
-            "url" => "git://github.com/user/my-repo",
-            "dependencies" => {
-            },
-          }
-        end # result
-
-        before do
-          WebMock
-          .stub_request(
-            :get,
-            "http://api.server/api/dummy/repositories/my-repo",
-          )
-          .to_return(
-            :status => 200,
-            :body => new_repo_info.to_json,
-            :headers => {
-              "Content-Type" => "application/json",
-            },
-          )
-        end # GET /repositories/my-repo
-
-        before do
-          expect(::SocialSnippet::Repository).to receive(:clone).twice do
-            ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
-          end
-
-          expect_any_instance_of(::SocialSnippet::Repository::RepositoryManager).to receive(:install_repository).twice do
-            true
+          allow(::SocialSnippet::Repository::RepositoryFactory).to receive(:clone) do
+            ::SocialSnippet::Repository::Drivers::BaseRepository.new("/path/to/repo")
           end
         end
 
@@ -162,8 +154,8 @@ module SocialSnippet::CommandLine::Sspm
             expect { instance.run }.to output(/Install/).to_stdout
           end
 
-          it "download" do
-            expect { instance.run }.to output(/Download/).to_stdout
+          it "clone" do
+            expect { instance.run }.to output(/Clone/).to_stdout
           end
 
           it "success" do
@@ -174,51 +166,10 @@ module SocialSnippet::CommandLine::Sspm
 
       end # $ sspm install new-repo
 
-      describe "$ sspm install --dry-run new-repo", :current => true do
+      describe "$ sspm install --dry-run new-repo" do
 
         let(:instance) { SubCommands::InstallCommand.new ["--dry-run", "new-repo"] }
         before { instance.init }
-
-        let(:result) do
-          {
-            "name" => "new-repo",
-            "desc" => "This is new repository.",
-            "url" => "git://github.com/user/new-repo",
-            "dependencies" => {
-              "my-repo" => "1.0.0",
-            },
-          }
-        end # result
-
-        before do
-          WebMock
-          .stub_request(
-            :get,
-            "http://api.server/api/dummy/repositories/new-repo",
-          )
-          .to_return(
-            :status => 200,
-            :body => result.to_json,
-            :headers => {
-              "Content-Type" => "application/json",
-            },
-          )
-        end # GET /repositories/new-repo/dependencies
-
-        before do
-          expect(::SocialSnippet::Repository).not_to receive(:clone) do
-            repo = ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
-            expect(repo).to receive(:dependencies) do
-              {
-                "my-repo" => "1.0.0",
-              }
-            end
-          end
-
-          expect_any_instance_of(::SocialSnippet::Repository::RepositoryManager).not_to receive(:install_repository) do
-            true
-          end
-        end
 
         context "output" do
 
@@ -238,12 +189,12 @@ module SocialSnippet::CommandLine::Sspm
             expect { instance.run }.to output(/Install/).to_stdout
           end
 
-          it "download" do
-            expect { instance.run }.not_to output(/Download/).to_stdout
+          it "clone" do
+            expect { instance.run }.to output(/Clone/).to_stdout
           end
 
           it "success" do
-            expect { instance.run }.not_to output(/Success/).to_stdout
+            expect { instance.run }.to output(/Success/).to_stdout
           end
 
         end # output

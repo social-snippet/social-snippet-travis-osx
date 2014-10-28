@@ -9,7 +9,7 @@ module SocialSnippet
         def clone(repo_url)
           uri = URI.parse repo_url
           if is_git_repo(uri)
-            path = GitRepository.download uri
+            path = ::SocialSnippet::Repository::Drivers::GitRepository.download uri
             repo = create_git_repo(path)
             repo.set_url repo_url
             repo.load_snippet_json
@@ -20,7 +20,7 @@ module SocialSnippet
         end # clone
 
         def create_git_repo(repo_path)
-          return GitRepository.new(repo_path)
+          return ::SocialSnippet::Repository::Drivers::GitRepository.new(repo_path)
         end
 
         def is_git_repo(uri)

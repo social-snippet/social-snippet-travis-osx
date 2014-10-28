@@ -14,7 +14,7 @@ module SocialSnippet
           get "repositories?q=#{query}"
         end
 
-        def repository(repo_name)
+        def find(repo_name)
           get "repositories/#{repo_name}"
         end
 

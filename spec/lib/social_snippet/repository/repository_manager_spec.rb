@@ -4,6 +4,12 @@ module SocialSnippet::Repository
 
   describe RepositoryManager, :repository_manager_current => true do
 
+    before do
+      allow_any_instance_of(::SocialSnippet::Registry::RegistryResources::Base).to receive(:rest_client) do
+        ::RestClient::Resource.new "http://api.server/api/dummy"
+      end
+    end # use dummy api server
+
     # Enable FakeFS
     before { FakeFS.activate! }
     after { FakeFS.deactivate!; FakeFS::FileSystem.clear }
@@ -148,10 +154,90 @@ module SocialSnippet::Repository
 
     describe "#install_repository" do
 
+      let(:my_repo_info) do
+        {
+          :name => "my-repo",
+          :url => "git://github.com/user/my-repo.git",
+          :dependencies => {
+          },
+        }
+      end
+
+      before do
+        WebMock
+          .stub_request(
+            :get,
+            "http://api.server/api/dummy/repositories/my-repo",
+          )
+          .to_return(
+            :status => 200,
+            :body => my_repo_info.to_json,
+            :headers => {
+              "Content-Type" => "application/json",
+            },
+          )
+      end # GET /repositories/my-repo
+
+      before do
+        allow(::SocialSnippet::Repository::RepositoryFactory).to receive(:clone).with(my_repo_info[:url]) do
+          class FakeRepo
+            attr_reader :path
+            attr_reader :dependencies
+          end
+          repo = FakeRepo.new
+          expect(repo).to receive(:path).and_return "/path/to/my-repo"
+          expect(repo).to receive(:dependencies).and_return my_repo_info[:dependencies]
+          repo
+        end
+      end
+
+      let(:new_repo_info) do
+        {
+          :name => "new-repo",
+          :url => "git://github.com/user/new-repo.git",
+          :dependencies => {
+            "my-repo" => "1.0.0",
+          },
+        }
+      end
+
+      before do
+        WebMock
+          .stub_request(
+            :get,
+            "http://api.server/api/dummy/repositories/new-repo",
+          )
+          .to_return(
+            :status => 200,
+            :body => new_repo_info.to_json,
+            :headers => {
+              "Content-Type" => "application/json",
+            },
+          )
+      end # GET /repositories/new-repo
+
+      before do
+        allow(::SocialSnippet::Repository::RepositoryFactory).to receive(:clone).with(new_repo_info[:url]) do
+          class FakeRepo
+            attr_reader :path
+            attr_reader :dependencies
+          end
+          repo = FakeRepo.new
+          expect(repo).to receive(:path).and_return "/path/to/new-repo"
+          expect(repo).to receive(:dependencies).and_return new_repo_info[:dependencies]
+          repo
+        end
+      end
+
+      before do
+        allow(::FileUtils).to receive(:cp_r) do
+        end
+      end
+
       context "install my-repo" do
 
         it do
-          instance.install_repository "my-repo"
+          instance.install_repository "my-repo", :dry_run => true
         end
 
       end

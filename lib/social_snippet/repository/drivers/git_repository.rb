@@ -4,6 +4,8 @@ module SocialSnippet
 
     module Drivers
 
+      require "rugged"
+
       class GitRepository < BaseRepository
 
         attr_reader :repo
@@ -30,14 +32,14 @@ module SocialSnippet
 
         def get_origin_refs
           repo.references
-          .select {|ref| /^refs\/remotes\/origin\// === ref.name }
-          .map {|ref| /^refs\/remotes\/origin\/(.*)/.match(ref.name)[1] }
+            .select {|ref| /^refs\/remotes\/origin\// === ref.name }
+            .map {|ref| /^refs\/remotes\/origin\/(.*)/.match(ref.name)[1] }
         end
 
         def get_tags
           repo.references
-          .select {|ref| /^refs\/tags\// === ref.name }
-          .map {|ref| /^refs\/tags\/(.*)/.match(ref.name)[1] }
+            .select {|ref| /^refs\/tags\// === ref.name }
+            .map {|ref| /^refs\/tags\/(.*)/.match(ref.name)[1] }
         end
 
         class << self
