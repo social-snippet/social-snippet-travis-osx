@@ -21,7 +21,9 @@ module SocialSnippet::CommandLine
         "name" => "example-repo",
         "desc" => "This is my repository.",
         "url" => "https://github.com/social-snippet/example-repo",
-      },
+        "dependencies" => {
+        },
+      }
     end # example_repo_info
 
     before do
