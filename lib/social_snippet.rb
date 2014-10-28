@@ -4,12 +4,14 @@ require_relative "social_snippet/tag_parser"
 require_relative "social_snippet/config"
 require_relative "social_snippet/repository"
 require_relative "social_snippet/repository_manager"
+require_relative "social_snippet/repository_factory"
 require_relative "social_snippet/context"
 require_relative "social_snippet/snippet"
 require_relative "social_snippet/inserter"
 require_relative "social_snippet/snippet_finder"
 require_relative "social_snippet/registry_client"
 require_relative "social_snippet/command_line"
+require_relative "social_snippet/logger"
 
 require "rugged"
 require "version_sorter"
@@ -18,6 +20,7 @@ require "rest_client"
 require "optparse"
 require "json"
 require "pathname"
+require "logger"
 
 # Extend Hash tsortable
 class Hash
@@ -33,16 +36,24 @@ module SocialSnippet
   class SocialSnippet
     attr_reader :repo_manager
     attr_reader :config
+    attr_reader :client
+    attr_reader :logger
 
     # Constructor
     def initialize
       @config = Config.new.freeze
-      init_repo
+      @logger = Logger.new STDOUT
+      init_repo_manager
+      init_registry_client
     end
 
     # Initialize for repository
-    def init_repo
-      @repo_manager = RepositoryManager.new(@config)
+    def init_repo_manager
+      @repo_manager = RepositoryManager.new(config, logger)
+    end
+
+    def init_registry_client
+      @client = RegistryClient.new(config)
     end
 
     # Insert snippets to given text

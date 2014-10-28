@@ -7,10 +7,6 @@ module SocialSnippet
 
     module Sspm
 
-      SSPM_API_HOST     = "sspm-test.herokuapp.com" # TODO: change host
-      SSPM_API_VERSION  = "v0"
-      SSPM_API_PROTOCOL = "https"
-
     end
 
   end

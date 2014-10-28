@@ -8,19 +8,11 @@ module SocialSnippet
 
         class SearchCommand < Command
 
-          attr_reader :query
-          attr_reader :client
+          attr_reader :social_snippet
 
           def initialize(new_args)
             super
-
-            @query = args.find {|arg| is_not_line_option? arg }
-
-            @client = ::SocialSnippet::RegistryClient.new(
-              SSPM_API_HOST,
-              SSPM_API_VERSION,
-              SSPM_API_PROTOCOL,
-            )
+            @social_snippet = ::SocialSnippet::SocialSnippet.new
           end
 
           def define_options
@@ -47,7 +39,8 @@ module SocialSnippet
           end
 
           def run
-            client.get_repositories(query).each do |repo|
+            query = next_token
+            social_snippet.client.repositories(query).each do |repo|
               puts output_format % output_list(repo)
             end
           end

@@ -7,7 +7,7 @@ describe SocialSnippet::SocialSnippet do
   after { FakeFS.deactivate!; FakeFS::FileSystem.clear }
 
   let(:instance) { SocialSnippet::SocialSnippet.new }
-  let(:repo_manager) { SocialSnippet::RepositoryManager.new(SocialSnippet::Config.new) }
+  let(:repo_manager) { SocialSnippet::RepositoryManager.new(::SocialSnippet::Config.new, ::SocialSnippet::Logger.new(STDOUT)) }
   let(:repo_path) { "#{ENV["HOME"]}/.social-snippet/repo" }
   let(:tmp_repo_path) { "/tmp/repos" }
   let(:tmp_repo_path_no_ver) { "/tmp/repos_no_ver" }

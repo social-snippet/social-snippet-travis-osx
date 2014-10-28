@@ -2,14 +2,20 @@ require "spec_helper"
 
 module SocialSnippet
 
-  describe RepositoryManager do
+  describe RepositoryManager, :repository_manager_current => true do
 
     # Enable FakeFS
     before { FakeFS.activate! }
     after { FakeFS.deactivate!; FakeFS::FileSystem.clear }
 
-    let(:instance) { RepositoryManager.new(Config.new) }
-    let(:repo_manager) { RepositoryManager.new(Config.new) }
+    let(:logger) do
+      logger = Logger.new(STDOUT)
+      logger.level = Logger::Severity::UNKNOWN
+      logger
+    end
+
+    let(:instance) { RepositoryManager.new(Config.new, logger) }
+    let(:repo_manager) { RepositoryManager.new(Config.new, logger) }
     let(:commit_id) { "dummycommitid" }
     let(:short_commit_id) { commit_id[0..7] }
 
@@ -135,6 +141,18 @@ module SocialSnippet
       end # create three repos
 
     end # find_repository
+
+    describe "#install_repository" do
+
+      context "install my-repo" do
+
+        it do
+          instance.install_repository "my-repo"
+        end
+
+      end
+
+    end
 
   end # RepositoryManager
 

@@ -9,7 +9,7 @@ module SocialSnippet
     after { FakeFS.deactivate! }
 
     let(:instance) { SocialSnippet.new }
-    let(:repo_manager) { RepositoryManager.new(Config.new) }
+    let(:repo_manager) { RepositoryManager.new(Config.new, Logger.new(STDOUT)) }
     let(:commit_id) { "dummycommitid" }
     let(:short_commit_id) { commit_id[0..7] }
     let(:repo_path) { "#{ENV["HOME"]}/.social-snippet/repo" }

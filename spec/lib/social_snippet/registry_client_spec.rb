@@ -24,6 +24,14 @@ module SocialSnippet
       ]
     end
 
+    let(:config) do
+      config = Config.new(
+        :sspm_host => "api.server",
+        :sspm_version => "v0",
+        :sspm_protocol => "http",
+      )
+    end
+
     before do
       WebMock
         .stub_request(
@@ -65,11 +73,11 @@ module SocialSnippet
 
     context "create instance" do
 
-      let(:instance) { RegistryClient.new("api.server", "v0") }
+      let(:instance) { RegistryClient.new(config) }
 
-      context "get_repositories" do
+      context "repositories" do
 
-        let(:result) { instance.get_repositories }
+        let(:result) { instance.repositories }
 
         context "check result" do
           let(:result_names) { result.map {|repo| repo["name"] } }
@@ -78,13 +86,13 @@ module SocialSnippet
           it { expect(result_names).to include "new-repo" }
         end
 
-      end # get_repositories
+      end # repositories
 
-      context "get_repositories with query" do
+      context "repositories with query" do
 
         context "query = repo" do
 
-          let(:result) { instance.get_repositories("repo") }
+          let(:result) { instance.repositories("repo") }
 
           context "check" do
             let(:result_names) { result.map {|repo| repo["name"] } }
@@ -97,7 +105,7 @@ module SocialSnippet
 
         context "query = new" do
 
-          let(:result) { instance.get_repositories("new") }
+          let(:result) { instance.repositories("new") }
 
           context "check" do
             let(:result_names) { result.map {|repo| repo["name"] } }
@@ -108,7 +116,7 @@ module SocialSnippet
 
         end
 
-      end # get_repositories with query
+      end # repositories with query
 
     end # create instance
 

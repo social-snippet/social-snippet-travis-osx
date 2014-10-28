@@ -4,12 +4,6 @@ module SocialSnippet::CommandLine::Sspm
 
   describe SubCommands::SearchCommand do
 
-    before do
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_HOST", "api.server"
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_VERSION", "dummy"
-      stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_PROTOCOL", "http"
-    end # define constants
-
     let(:fake_repos) do
       [
         {
@@ -25,11 +19,22 @@ module SocialSnippet::CommandLine::Sspm
       ]
     end
 
+    before do
+      allow_any_instance_of(::SocialSnippet::RegistryClient).to receive(:config) do
+        config = ::SocialSnippet::Config.new(
+          :sspm_host      => "api.server",
+          :sspm_version   => "dummy",
+          :sspm_protocol  => "http",
+        )
+      end
+    end
+
     context "create instance" do
 
       describe "$ search repo" do
 
         let(:instance) { SubCommands::SearchCommand.new(["repo"]) }
+
         before { instance.init }
 
         before do

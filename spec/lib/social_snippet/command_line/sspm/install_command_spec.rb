@@ -2,7 +2,7 @@ require "spec_helper"
 
 module SocialSnippet::CommandLine::Sspm
 
-  describe SubCommands::InstallCommand do
+  describe SubCommands::InstallCommand, :install_current => true do
 
     before do
       stub_const "SocialSnippet::CommandLine::Sspm::SSPM_API_HOST", "api.server"
@@ -18,25 +18,20 @@ module SocialSnippet::CommandLine::Sspm
         before { instance.init }
 
         let(:result) do
-          [
-            {
-              "name" => "my-repo",
-              "desc" => "This is my repository.",
-              "url" => "git://github.com/user/my-repo",
+          {
+            "name" => "my-repo",
+            "desc" => "This is my repository.",
+            "url" => "git://github.com/user/my-repo",
+            "dependencies" => {
             },
-            # {
-            #   "name" => "new-repo",
-            #   "desc" => "This is new repository.",
-            #   "url" => "git://github.com/user/new-repo",
-            # },
-          ]
+          }
         end # result
 
         before do
           WebMock
           .stub_request(
             :get,
-            "http://api.server/api/dummy/repositories/my-repo/dependencies",
+            "http://api.server/api/dummy/repositories/my-repo",
           )
           .to_return(
             :status => 200,
@@ -49,7 +44,11 @@ module SocialSnippet::CommandLine::Sspm
 
         before do
           expect(::SocialSnippet::Repository).to receive(:clone).once do
-            ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
+            repo = ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
+            expect(repo).to receive(:dependencies) do
+              {}
+            end
+            repo
           end
 
           expect_any_instance_of(::SocialSnippet::RepositoryManager).to receive(:install_repository).once do
@@ -84,35 +83,56 @@ module SocialSnippet::CommandLine::Sspm
         let(:instance) { SubCommands::InstallCommand.new ["new-repo"] }
         before { instance.init }
 
-        let(:result) do
-          [
-            {
-              "name" => "my-repo",
-              "desc" => "This is my repository.",
-              "url" => "git://github.com/user/my-repo",
+        let(:new_repo_info) do
+          {
+            "name" => "new-repo",
+            "desc" => "This is new repository.",
+            "url" => "git://github.com/user/new-repo",
+            "dependencies" => {
+              "my-repo" => "1.0.0",
             },
-            {
-              "name" => "new-repo",
-              "desc" => "This is new repository.",
-              "url" => "git://github.com/user/new-repo",
-            },
-          ]
+          }
         end # result
 
         before do
           WebMock
           .stub_request(
             :get,
-            "http://api.server/api/dummy/repositories/new-repo/dependencies",
+            "http://api.server/api/dummy/repositories/new-repo",
           )
           .to_return(
             :status => 200,
-            :body => result.to_json,
+            :body => new_repo_info.to_json,
             :headers => {
               "Content-Type" => "application/json",
             },
           )
-        end # GET /repositories/new-repo/dependencies
+        end # GET /repositories/new-repo
+
+        let(:my_repo_info) do
+          {
+            "name" => "my-repo",
+            "desc" => "This is new repository.",
+            "url" => "git://github.com/user/my-repo",
+            "dependencies" => {
+            },
+          }
+        end # result
+
+        before do
+          WebMock
+          .stub_request(
+            :get,
+            "http://api.server/api/dummy/repositories/my-repo",
+          )
+          .to_return(
+            :status => 200,
+            :body => new_repo_info.to_json,
+            :headers => {
+              "Content-Type" => "application/json",
+            },
+          )
+        end # GET /repositories/my-repo
 
         before do
           expect(::SocialSnippet::Repository).to receive(:clone).twice do
@@ -160,25 +180,21 @@ module SocialSnippet::CommandLine::Sspm
         before { instance.init }
 
         let(:result) do
-          [
-            {
-              "name" => "my-repo",
-              "desc" => "This is my repository.",
-              "url" => "git://github.com/user/my-repo",
+          {
+            "name" => "new-repo",
+            "desc" => "This is new repository.",
+            "url" => "git://github.com/user/new-repo",
+            "dependencies" => {
+              "my-repo" => "1.0.0",
             },
-            {
-              "name" => "new-repo",
-              "desc" => "This is new repository.",
-              "url" => "git://github.com/user/new-repo",
-            },
-          ]
+          }
         end # result
 
         before do
           WebMock
           .stub_request(
             :get,
-            "http://api.server/api/dummy/repositories/new-repo/dependencies",
+            "http://api.server/api/dummy/repositories/new-repo",
           )
           .to_return(
             :status => 200,
@@ -191,7 +207,12 @@ module SocialSnippet::CommandLine::Sspm
 
         before do
           expect(::SocialSnippet::Repository).not_to receive(:clone) do
-            ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
+            repo = ::SocialSnippet::Repository::BaseRepository.new("/path/to/repo")
+            expect(repo).to receive(:dependencies) do
+              {
+                "my-repo" => "1.0.0",
+              }
+            end
           end
 
           expect_any_instance_of(::SocialSnippet::RepositoryManager).not_to receive(:install_repository) do
@@ -209,8 +230,8 @@ module SocialSnippet::CommandLine::Sspm
             expect { instance.run }.to output(/new-repo/).to_stdout
           end
 
-          it "my-repo -> new-repo" do
-            expect { instance.run }.to output(/my-repo.*new-repo/m).to_stdout
+          it "new-repo -> my-repo" do
+            expect { instance.run }.to output(/new-repo.*my-repo/m).to_stdout
           end
 
           it "install" do

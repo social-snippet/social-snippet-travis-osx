@@ -37,8 +37,8 @@ module SocialSnippet
 
       def init
         define_options
-        opt_parser.parse! line_options
-        @tokens = extract_tokens
+        opt_parser.parse! args
+        @tokens = args
         set_default_options
       end
 
@@ -80,17 +80,13 @@ module SocialSnippet
         return true
       end
 
-      def extract_tokens
-        args.select {|arg| is_not_line_option?(arg) }
-      end
-
       # [--opt1, --opt2, token1, token2] => token1
       def next_token
         @tokens.shift
       end
 
-      def say(s)
-        puts s
+      def has_next_token?
+        not @tokens.empty?
       end
 
     end

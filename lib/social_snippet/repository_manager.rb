@@ -4,11 +4,13 @@ module SocialSnippet
     attr_reader :install_path
     attr_reader :repo_paths
     attr_reader :repo_cache_path
+    attr_reader :logger
+    attr_reader :client
 
     # Constructor
     #
     # @param config [SocialSnippet::Config] The config of manager
-    def initialize(config)
+    def initialize(config, logger)
       @install_path = "#{config.home}/repo"
 
       # path
@@ -19,6 +21,9 @@ module SocialSnippet
       # cache path
       @repo_cache_path = "#{config.home}/repo_cache"
       FileUtils.mkdir_p @repo_cache_path
+
+      @logger = logger
+      @client = RegistryClient.new(config)
     end
 
     # Create suitable Repository class instance
@@ -86,7 +91,10 @@ module SocialSnippet
       return nil
     end
 
-    def install_repository(repo)
+    def install_repository(repo_name)
+      logger.say "Install: #{repo_name}"
+
+      return # TODO: remove
       dest_dir = "#{install_path}/#{repo.name}"
       if Dir.exists?(dest_dir)
         # TODO: update repo
